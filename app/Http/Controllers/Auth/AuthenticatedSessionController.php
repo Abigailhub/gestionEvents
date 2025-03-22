@@ -24,11 +24,23 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-        $request->session()->regenerate();
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            // 🔥 Redirection en fonction du rôle
+            return Auth::user()->role === 'createur'
+                ? redirect()->intended('/dashboard-createur')
+                : redirect()->intended('/dashboard-participant');
+        }
+
+        return back()->withErrors([
+            'email' => 'Les informations de connexion ne sont pas correctes.',
+        ]);
     }
 
     /**
