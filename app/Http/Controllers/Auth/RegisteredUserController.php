@@ -36,7 +36,11 @@ class RegisteredUserController extends Controller
         'role' => ['required', 'string', 'in:participant,createur'],
     ]);
 
-    $data['role'] = $request->input('role', 'participant'); // Utilise le rôle envoyé par le formulaire
+        $data['role'] = $request->input('role', 'participant'); // Utilise le rôle envoyé par le formulaire
+
+        $data['role'] = $request->input('role','participant'); // ou 'createur' selon ton besoin
+        $data['role'] = $request->input('role','createur');
+
 
     $data['password'] = bcrypt($data['password']); // Hachage du mot de passe
 
